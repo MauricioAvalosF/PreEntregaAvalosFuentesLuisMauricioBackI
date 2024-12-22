@@ -6,6 +6,8 @@ import { __dirname } from './path.js'
 import productRouter from './routes/productos.routes.js'
 import cartRouter from './routes/cart.routes.js'
 import chatRouter from './routes/chat.routes.js'
+import mongoose from 'mongoose'
+import orderRouter from './routes/orders.routes.js'
 
 const app = express()
 const hbs = create()
@@ -14,6 +16,12 @@ const PORT = 8080
 const server = app.listen(PORT, () => {
     console.log("Server on port", PORT)
 })
+
+
+await mongoose.connect("mongodb+srv://elmavalos:elmavalos123@cluster0.urynp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+.then(() => console.log("Base de DAtos conectada con exito"))
+.catch((e) => console.log("Error al conectar la Base de datos"))
+
 
 //Inicializo Socket.io en el servidor
 const io = new Server(server)
@@ -32,6 +40,7 @@ app.use('/public', express.static(__dirname + '/public'))//Defino la carpeta pub
 app.use('/api/products', productRouter)
 app.use('/api/carts', cartRouter)
 app.use('/api/chat', chatRouter)
+app.use('/api/orders', orderRouter)
 app.get('/', (req,res) => {
     res.status(200).send("ok")
 })

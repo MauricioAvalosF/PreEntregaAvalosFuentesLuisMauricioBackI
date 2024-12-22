@@ -2,7 +2,6 @@
 
 <div class="products">
     {{#each productos}}
-        {{#if status}}
         <div class="card" style="width: 18rem;">
                 <div class="card-body">
                     <h5 class="card-title">{{title}}</h5>
@@ -14,7 +13,6 @@
                     <button type="button" class="btn btn-primary">Añadir al carrito</button>
                 </div>
         </div>    
-        {{/if}}
     {{/each}}
 </div>
     

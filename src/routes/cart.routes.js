@@ -1,61 +1,23 @@
 import { Router } from "express";
-import crypto from "crypto";
-import { __dirname } from "../path.js";
-import { promises as fs } from 'fs'
-import path from "path";
+import { getCart, createCart, insertProductCart, updateProductsCart, updateQuantityProductCart, deleteCart, deleteProductCart } from "../controllers/carts.controllers.js";
 
 const cartRouter = Router()
 
-const carritosPath = path.resolve(__dirname, '../src/db/carritos.json')
-
-//leemos el archivo
-const carritosData = await fs.readFile(carritosPath, 'utf-8')
-const carritos = JSON.parse(carritosData)
-
 //Consultar productos de carritos
-cartRouter.get('/:idC', (req, res) => {
-    const idCarrito = req.params.idC
-    const carrito = carritos.find(car => car.id == idCarrito)
-
-    if (carrito) {
-        res.status(200).send(carrito.products)
-    } else {
-        res.status(404).send({ mensaje: "El carrito no existe" })
-    }
-})
+cartRouter.get('/:cid', getCart)
 
 //Crear un carrito vacio
-cartRouter.post('/', async (req, res) => {
-    const newCarrito = {
-        id: crypto.randomBytes(5).toString('hex'),
-        products: []
-    }
-
-    carritos.push(newCarrito)
-    await fs.writeFile(carritosPath, JSON.stringify(carritos))
-    res.status(200).send({ mensaje: `Carrito creado con exito, con id de ${newCarrito.id}` })
-})
+cartRouter.post('/', createCart)
 
 //Guardar productos en carrito
-cartRouter.post('/:idC/products/:idP', async (req, res) => {
-    const idCarrito = req.params.idC
-    const { quantity } = req.body
-    const idProducto = req.params.idP
-    const carrito = carritos.find(car => car.id == idCarrito)
+cartRouter.post('/:cid/products/:pid', insertProductCart)
 
-    if (carrito) {
-        const indice = carrito.products.findIndex(prod => prod.id == idProducto)
-        if (indice != -1) {
-            carrito.products[indice].quantity = quantity
-        } else {
-            carrito.products.push({ id: idProducto, quantity: quantity })
-        }
+cartRouter.put('/:cid', updateProductsCart)
 
-        await fs.writeFile(carritosPath, JSON.stringify(carritos))
-        res.status(200).send({ mensaje: "Carrito actualizado con exito" })
-    } else {
-        res.status(404).send({ mensaje: "El carrito no existe" })
-    }
-})
+cartRouter.put('/:cid/products/:pid', updateQuantityProductCart)
+
+cartRouter.delete('/:cid', deleteCart)
+
+cartRouter.delete('/:cid/products/:pid', deleteProductCart)
 
 export default cartRouter
